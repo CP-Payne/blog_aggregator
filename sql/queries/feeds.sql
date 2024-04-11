@@ -4,5 +4,5 @@ VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING *;
 
 
--- name: GetFeedsByUserId :one
-SELECT * FROM feeds WHERE user_id = $1;
+-- name: GetFeeds :many
+SELECT * FROM feeds;

@@ -51,3 +51,13 @@ func (h *FeedHandler) CreateFeed(w http.ResponseWriter, r *http.Request, user da
 	}
 	h.util.RespondWithJSON(w, http.StatusCreated, models.DatabaseFeedToFeed(feed))
 }
+
+func (h *FeedHandler) GetFeeds(w http.ResponseWriter, r *http.Request) {
+	feeds, err := h.DB.GetFeeds(r.Context())
+	if err != nil {
+		h.util.ServerError(w, err, "Couldn't retreive feeds")
+		return
+	}
+
+	h.util.RespondWithJSON(w, http.StatusOK, models.DatabaseFeedsToFeeds(feeds))
+}

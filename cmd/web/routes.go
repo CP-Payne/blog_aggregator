@@ -29,6 +29,7 @@ func (app *application) routes() *http.ServeMux {
 
 	// feeds
 	mux.HandleFunc("POST /v1/feeds", middleware.AuthMiddleware(feedHandler.CreateFeed))
+	mux.HandleFunc("GET /v1/feeds", feedHandler.GetFeeds)
 
 	return mux
 }
