@@ -48,5 +48,10 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		h.util.ServerError(w, err, "Couldn't create user")
 		return
 	}
+	h.util.RespondWithJSON(w, http.StatusCreated, models.DatabaseUserToUser(user))
+}
+
+// Get user by ApiKey
+func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request, user database.User) {
 	h.util.RespondWithJSON(w, http.StatusOK, models.DatabaseUserToUser(user))
 }

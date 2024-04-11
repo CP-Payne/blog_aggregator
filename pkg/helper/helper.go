@@ -2,10 +2,12 @@ package helper
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"runtime/debug"
+	"strings"
 )
 
 type Util struct {
@@ -19,6 +21,8 @@ func NewUtil(errorLog, infoLog *log.Logger) *Util {
 		InfoLog:  infoLog,
 	}
 }
+
+var ErrNoAuthHeaderIncluded = errors.New("no auth header included")
 
 func (u *Util) ServerError(w http.ResponseWriter, err error, msg string) {
 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
@@ -61,4 +65,17 @@ func (u *Util) RespondWithJSON(w http.ResponseWriter, code int, payload interfac
 	}
 	w.WriteHeader(code)
 	w.Write(dat)
+}
+
+func (u *Util) GetApiKey(headers http.Header) (string, error) {
+	authHeader := headers.Get("Authorization")
+	if authHeader == "" {
+		return "", ErrNoAuthHeaderIncluded
+	}
+	splitAuth := strings.Split(authHeader, " ")
+	if len(splitAuth) < 2 || splitAuth[0] != "ApiKey" {
+		return "", errors.New("malformed authorization header")
+	}
+
+	return splitAuth[1], nil
 }
