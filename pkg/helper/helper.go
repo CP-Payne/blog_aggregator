@@ -1,4 +1,4 @@
-package main
+package helper
 
 import (
 	"encoding/json"
@@ -8,38 +8,50 @@ import (
 	"runtime/debug"
 )
 
-func (app *application) serverError(w http.ResponseWriter, err error) {
+type Util struct {
+	ErrorLog *log.Logger
+	InfoLog  *log.Logger
+}
+
+func NewUtil(errorLog, infoLog *log.Logger) *Util {
+	return &Util{
+		ErrorLog: errorLog,
+		InfoLog:  infoLog,
+	}
+}
+
+func (u *Util) ServerError(w http.ResponseWriter, err error, msg string) {
 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
 	// In addition to informing th user about the internal server error
 	// We also want to know what the internal server error is in order to fix it.
 	// Therefore, we also print it to stdOut
-	app.errorLog.Output(2, trace)
+	u.ErrorLog.Output(2, trace)
 
 	// http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-	app.respondWithError(w, 500, http.StatusText(http.StatusInternalServerError))
+	u.RespondWithError(w, 500, msg)
 }
 
-func (app *application) clientError(w http.ResponseWriter, status int) {
+func (u *Util) ClientError(w http.ResponseWriter, status int) {
 	http.Error(w, http.StatusText(status), status)
 }
 
-func (app *application) notFound(w http.ResponseWriter) {
-	app.clientError(w, http.StatusNotFound)
+func (u *Util) NotFound(w http.ResponseWriter) {
+	u.ClientError(w, http.StatusNotFound)
 }
 
-func (app *application) respondWithError(w http.ResponseWriter, code int, message string) {
+func (u *Util) RespondWithError(w http.ResponseWriter, code int, message string) {
 	// if code > 499 {
 	// 	log.Printf("Responing with 5xx error: %s", message)
 	// }
 	type errorResponse struct {
 		Error string `json:"error"`
 	}
-	app.respondWithJSON(w, code, errorResponse{
+	u.RespondWithJSON(w, code, errorResponse{
 		Error: message,
 	})
 }
 
-func (app *application) respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+func (u *Util) RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	dat, err := json.Marshal(payload)
 	if err != nil {
