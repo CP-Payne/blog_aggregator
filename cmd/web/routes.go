@@ -10,6 +10,8 @@ import (
 )
 
 func (app *application) routes() *http.ServeMux {
+	// Middleware defined here are applied on all requests and responses
+	// Middleware in the routes function are applied on specific endpoints
 	middleware := middleware.NewMiddleware(app.util, app.DB)
 
 	readinessHandler := readiness.NewReadinessHandler(app.util, app.DB)
