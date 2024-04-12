@@ -49,7 +49,27 @@ func (h *FeedHandler) CreateFeed(w http.ResponseWriter, r *http.Request, user da
 		h.util.ServerError(w, err, "Couldn't create feed")
 		return
 	}
-	h.util.RespondWithJSON(w, http.StatusCreated, models.DatabaseFeedToFeed(feed))
+	// When a user creates a feed, automatically follow it
+	feedFollow, err := h.DB.CreateFollowFeed(r.Context(), database.CreateFollowFeedParams{
+		ID:        uuid.New(),
+		FeedID:    feed.ID,
+		UserID:    user.ID,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	})
+	if err != nil {
+		h.util.ServerError(w, err, "Something went wrong. Couldn't create follow feed")
+		return
+	}
+	type resp struct {
+		Feed       models.Feed       `json:"feed"`
+		FeedFollow models.FeedFollow `json:"feed_follow"`
+	}
+
+	h.util.RespondWithJSON(w, http.StatusCreated, resp{
+		Feed:       models.DatabaseFeedToFeed(feed),
+		FeedFollow: models.DatabaseFeedFollowToFeedFollow(feedFollow),
+	})
 }
 
 func (h *FeedHandler) GetFeeds(w http.ResponseWriter, r *http.Request) {
