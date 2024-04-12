@@ -34,7 +34,7 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	userParams := params{}
 	err := decoder.Decode(&userParams)
 	if err != nil {
-		h.util.RespondWithError(w, http.StatusBadRequest, "Couldn't decode paramters")
+		h.util.RespondWithError(w, http.StatusBadRequest, "Couldn't decode paramaters")
 		return
 	}
 
