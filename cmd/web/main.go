@@ -4,11 +4,16 @@ import (
 	"net/http"
 
 	"github.com/CP-Payne/blog_aggregator/cmd/middleware"
+	"github.com/CP-Payne/blog_aggregator/cmd/scraper"
 	_ "github.com/lib/pq"
 )
 
 func main() {
 	app := loadConfig()
+
+	scrp := scraper.NewScraper(*app.util, app.DB)
+
+	go scrp.StartScraper()
 
 	middleware := middleware.NewMiddleware(app.util, app.DB)
 	corsMux := middleware.CorsMiddleware(app.routes())
