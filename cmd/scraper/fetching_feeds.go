@@ -54,9 +54,9 @@ func (s *Scraper) StartScraper() {
 				// Fetch rss data
 				feedRssData, err := s.FetchDataFromRSS(feedData.Url)
 				if err != nil {
-					s.util.ErrorLog.Printf("Failed to fetch rss data for %s. FeedID: %v", feed.Name, feed.ID)
+					s.util.ErrorLog.Printf("Couldn't collect feed %s: %v", feed.Name, err)
 				}
-				s.processRSSData(feedRssData, feed.ID)
+				s.processRSSData(feedRssData, feed)
 				s.MarkFeedFetched(feed.ID)
 			}(feed)
 		}
@@ -65,7 +65,7 @@ func (s *Scraper) StartScraper() {
 	}
 }
 
-func (s *Scraper) processRSSData(rssData *Rss, feedId uuid.UUID) {
+func (s *Scraper) processRSSData(rssData *Rss, feed models.Feed) {
 	items := rssData.Channel.Item
 	for _, item := range items {
 		// fmt.Printf("Item Title: %s\n", item.Title)
@@ -82,12 +82,14 @@ func (s *Scraper) processRSSData(rssData *Rss, feedId uuid.UUID) {
 			Url:         item.Link,
 			Description: sql.NullString{String: item.Description, Valid: item.Description != ""},
 			PublishedAt: sql.NullTime{Time: parsedTime, Valid: !parsedTime.IsZero()},
-			FeedID:      feedId,
+			FeedID:      feed.ID,
 		})
 		if err != nil {
-			s.util.ErrorLog.Printf("Failed to save post '%s': %v\n", item.Title, err)
+			s.util.ErrorLog.Printf("Couldn't create post: %v", err)
+			continue
 		}
 	}
+	s.util.InfoLog.Printf("Feed %s collected, %v posts found", feed.Name, len(items))
 }
 
 func (s *Scraper) GetOldestFetchedFeeds(numToFetch int) []models.Feed {
