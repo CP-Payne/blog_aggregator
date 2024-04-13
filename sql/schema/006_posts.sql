@@ -7,7 +7,7 @@ CREATE TABLE posts (
     url VARCHAR(255) NOT NULL UNIQUE,
     description TEXT,
     published_at TIMESTAMP,
-    feed_id UUID NOT NULL REFERENCES feeds(id)
+    feed_id UUID NOT NULL REFERENCES feeds(id) ON DELETE CASCADE
 );
 
 -- +goose Down
