@@ -2,9 +2,9 @@ package scraper
 
 import (
 	"context"
+	"database/sql"
 	"encoding/xml"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"sync"
@@ -56,9 +56,7 @@ func (s *Scraper) StartScraper() {
 				if err != nil {
 					s.util.ErrorLog.Printf("Failed to fetch rss data for %s. FeedID: %v", feed.Name, feed.ID)
 				}
-				s.processRSSData(feedRssData)
-				// TODO Return error from the above function when implementing database
-				// If error is not nil then makr feed as fetched
+				s.processRSSData(feedRssData, feed.ID)
 				s.MarkFeedFetched(feed.ID)
 			}(feed)
 		}
@@ -67,10 +65,28 @@ func (s *Scraper) StartScraper() {
 	}
 }
 
-func (s *Scraper) processRSSData(rssData *Rss) {
+func (s *Scraper) processRSSData(rssData *Rss, feedId uuid.UUID) {
 	items := rssData.Channel.Item
 	for _, item := range items {
-		fmt.Printf("Item Title: %s\n", item.Title)
+		// fmt.Printf("Item Title: %s\n", item.Title)
+		parsedTime, err := parsePubDate(item.PubDate)
+		if err != nil {
+			s.util.ErrorLog.Println("Failed to parse publication date:", err)
+			continue
+		}
+		err = s.DB.CreatePost(context.Background(), database.CreatePostParams{
+			ID:          uuid.New(),
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+			Title:       item.Title,
+			Url:         item.Link,
+			Description: sql.NullString{String: item.Description, Valid: item.Description != ""},
+			PublishedAt: sql.NullTime{Time: parsedTime, Valid: !parsedTime.IsZero()},
+			FeedID:      feedId,
+		})
+		if err != nil {
+			s.util.ErrorLog.Printf("Failed to save post '%s': %v\n", item.Title, err)
+		}
 	}
 }
 
@@ -91,7 +107,7 @@ func (s *Scraper) MarkFeedFetched(feedId uuid.UUID) {
 		s.util.ErrorLog.Printf("Failed to mark feed as fetched: %v", err)
 		return
 	}
-	fmt.Print("Feed marked as fetched.\n**********************\n")
+	// fmt.Print("Feed marked as fetched.\n**********************\n")
 }
 
 func (s *Scraper) FetchDataFromRSS(url string) (*Rss, error) {
@@ -127,4 +143,20 @@ func (s *Scraper) FetchDataFromRSS(url string) (*Rss, error) {
 	}
 
 	return &rssData, nil
+}
+
+func parsePubDate(pubDate string) (time.Time, error) {
+	const (
+		layout    = "Mon, 02 Jan 2006 15:04:05 -0700" // Your original layout
+		altLayout = "Mon, 2 Jan 2006 15:04:05 -0700"  // Alternative layout for single-digit days
+	)
+	t, err := time.Parse(layout, pubDate)
+	if err != nil {
+		// Try the alternative layout
+		t, err = time.Parse(altLayout, pubDate)
+		if err != nil {
+			return time.Time{}, err // Neither layout worked
+		}
+	}
+	return t, nil
 }

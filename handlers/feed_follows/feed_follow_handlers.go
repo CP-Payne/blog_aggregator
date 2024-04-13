@@ -36,7 +36,6 @@ func (h *FeedFollowHandler) FollowFeed(w http.ResponseWriter, r *http.Request, u
 		h.util.RespondWithError(w, http.StatusBadRequest, "Couldn't decode paramaters")
 		return
 	}
-	// TODO: Check if feed exists before following
 	feedFollow, err := h.DB.CreateFollowFeed(r.Context(), database.CreateFollowFeedParams{
 		ID:        uuid.New(),
 		FeedID:    params.FeedId,
