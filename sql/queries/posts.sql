@@ -12,7 +12,8 @@ SELECT
     p.description,
     p.published_at,
     p.created_at,
-    p.updated_at
+    p.updated_at,
+    p.feed_id
 FROM 
     posts p
 INNER JOIN 

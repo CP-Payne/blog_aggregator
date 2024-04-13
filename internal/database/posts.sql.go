@@ -52,7 +52,8 @@ SELECT
     p.description,
     p.published_at,
     p.created_at,
-    p.updated_at
+    p.updated_at,
+    p.feed_id
 FROM 
     posts p
 INNER JOIN 
@@ -78,6 +79,7 @@ type GetPostsByUserRow struct {
 	PublishedAt sql.NullTime
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
+	FeedID      uuid.UUID
 }
 
 func (q *Queries) GetPostsByUser(ctx context.Context, arg GetPostsByUserParams) ([]GetPostsByUserRow, error) {
@@ -97,6 +99,7 @@ func (q *Queries) GetPostsByUser(ctx context.Context, arg GetPostsByUserParams) 
 			&i.PublishedAt,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.FeedID,
 		); err != nil {
 			return nil, err
 		}
