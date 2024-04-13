@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -8,6 +9,7 @@ import (
 	"net/http"
 	"runtime/debug"
 	"strings"
+	"time"
 )
 
 type Util struct {
@@ -78,4 +80,11 @@ func (u *Util) GetApiKey(headers http.Header) (string, error) {
 	}
 
 	return splitAuth[1], nil
+}
+
+func NullTimeToPtr(nt sql.NullTime) *time.Time {
+	if nt.Valid {
+		return &nt.Time
+	}
+	return nil
 }
