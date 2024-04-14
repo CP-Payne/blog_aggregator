@@ -84,6 +84,14 @@ Here is what you should include based on your PostgreSQL setup:
 - `port`: The port number your database runs on.
 - `database`: The name of your database.
 
+### Database Setup
+
+Before running the server, you need to create the database schema. You can run the SQL scripts manually in the order specified in the `/sql/schema` folder or use `goose` for automatic migrations. Install `goose` and execute the following command within the schema directory:
+
+```bash
+goose postgres "protocol://username:password@host:port/database" up
+```
+
 ### Running the Server
 
 To start the server, simply run the following command from the root of the project:
@@ -102,13 +110,7 @@ curl -X GET 'http://localhost:8080/v1/feeds'
 ```
 
 
-## Database Setup
 
-Before running the server, you need to create the database schema. You can run the SQL scripts manually in the order specified in the `/sql/schema` folder or use `goose` for automatic migrations. Install `goose` and execute the following command within the schema directory:
-
-```bash
-goose postgres "protocol://username:password@host:port/database" up
-```
 
 ## Future Enhancements
 
