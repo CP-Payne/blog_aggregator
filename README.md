@@ -11,23 +11,23 @@ Below is a list of available endpoints, grouped by functionality. Detailed docum
 
 ### Users
 
-- [`POST /v1/users`](createUser.md) - Create a new user (returns an API key)
-- [`GET /v1/users`](getUser.md) - Get user information (**Authenticated**)
+- [`POST /v1/users`](./docs/users/createUser.md) - Create a new user (returns an API key)
+- [`GET /v1/users`](./docs/users/getUser.md) - Get user information (**Authenticated**)
 
 ### Feeds
 
-- [`POST /v1/feeds`](createFeeds.md) - Add a new feed and automatically follow it (**Authenticated**)
-- [`GET /v1/feeds`](getFeeds.md) - Return a list of all feeds
+- [`POST /v1/feeds`](./docs/feeds/createFeeds.md) - Add a new feed and automatically follow it (**Authenticated**)
+- [`GET /v1/feeds`](./docs/feeds/getFeeds.md) - Return a list of all feeds
 
 ### Following Feeds
 
-- [`POST /v1/feed_follows`](createFeedFollow.md) - Follow a feed (**Authenticated**)
-- [`GET /v1/feed_follows`](getFeedFollows.md) - Retrieve a list of feeds a user is following (**Authenticated**)
-- [`DELETE /v1/feed_follows/{feedFollowID}`](deleteFeedFollow.md) - Unfollow a specific feed (**Authenticated**)
+- [`POST /v1/feed_follows`](./docs/feed_follows/createFeedFollow.md) - Follow a feed (**Authenticated**)
+- [`GET /v1/feed_follows`](./docs//feed_follows/getFeedFollows.md) - Retrieve a list of feeds a user is following (**Authenticated**)
+- [`DELETE /v1/feed_follows/{feedFollowID}`](./docs/feed_follows/deleteFeedFollow.md) - Unfollow a specific feed (**Authenticated**)
 
 ### Posts
 
-- [`GET /v1/posts`](getPosts.md) - Retrieves posts from the RSS feeds that the user is subscribed to (**Authenticated**)
+- [`GET /v1/posts`](./docs/posts/getPosts.md) - Retrieves posts from the RSS feeds that the user is subscribed to (**Authenticated**)
 
 
 ## Current Data Storage Implementation
