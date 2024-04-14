@@ -46,7 +46,7 @@ The response contains the unique identifier (`id`) for the user, their name (`na
 
 To update a user's email and password, you would make the following request:
 
-```json
+```bash
 curl -X GET 'http://localhost:8080/v1/users' \
 -H 'Authorization: ApiKey <api-key>'
 ```

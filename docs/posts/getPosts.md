@@ -56,7 +56,7 @@ If the query includes an invalid `author_id`, or if there is an internal error w
 - **Unauthorized (Invalid or No API Key Provided)**:
     - **Code**: `401 UNAUTHORIZED`
     - **Content**: `{"error": "Invalid ApiKey"}` or `{"error": "Couldn't retrieve user"}`
-    - 
+     
 ## Examples
 ### Retrieve Latest Posts
 
